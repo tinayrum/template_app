@@ -3,52 +3,58 @@ site_description: <Application Description>
 repo_name: <Application Repository Name>
 repo_url: <Application Repository URL>
 
-# MkDocs Material テーマの設定
+# テーマ設定
 theme:
   name: material
   language: ja
-  highlightjs: true
-  hljs_languages:
-    - python
-    - yaml
-    - bash
   features:
+    - navigation.tabs        # トップレベルのメニューをタブ表示
+    - navigation.sections    # セクションを展開表示
+    - navigation.top         # 「トップに戻る」ボタン
     - search.highlight
-    - search.suggestions
+    - search.share
     - content.code.copy
-    - content.code.select
   palette:
+    # ライトモード
     - scheme: default
+      primary: indigo
+      accent: light blue
       toggle:
-          icon: material/toggle-switch-off-outline
-          name: ダークモードに切り替えます。
+        icon: material/weather-sunny
+        name: ダークモードへ切り替え
+    # ダークモード
     - scheme: slate
-      primary: blue
-      accent: cyan
+      primary: indigo
+      accent: light blue
       toggle:
-          icon: material/toggle-switch
-          name: ライトモードに切り替えます。
+        icon: material/weather-night
+        name: ライトモードへ切り替え
 
-# Markdown 拡張機能の設定
+# 拡張機能
 markdown_extensions:
-  - attr_list
   - admonition
+  - attr_list
+  - md_in_html
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.arithmatex:
+      generic: true
   - toc:
       permalink: true
 
-# Mermaid.js の設定 (CDNから読み込み)
+# 数式とMermaidのサポート
 extra_javascript:
-  - https://unpkg.com/mermaid/dist/mermaid.min.js
-
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 # ナビゲーションメニューの設定
 nav:
   - Home: index.md
