@@ -13,25 +13,41 @@ theme:
     - yaml
     - bash
   features:
-    # - navigation.tabs
-    # - navigation.top
     - search.highlight
     - search.suggestions
     - content.code.copy
     - content.code.select
+  palette:
+    - scheme: default
+      toggle:
+          icon: material/toggle-switch-off-outline
+          name: ダークモードに切り替えます。
+    - scheme: slate
+      primary: blue
+      accent: cyan
+      toggle:
+          icon: material/toggle-switch
+          name: ライトモードに切り替えます。
 
 # Markdown 拡張機能の設定
 markdown_extensions:
+  - attr_list
   - admonition
   - pymdownx.details
-  - pymdownx.superfences  # ★変更: シンプルな記述のみにします
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
   - toc:
       permalink: true
 
-# # Mermaid.js の設定 (CDNから読み込み)
-# extra_javascript:
-#   - https://unpkg.com/mermaid/dist/mermaid.min.js
-
+# Mermaid.js の設定 (CDNから読み込み)
+extra_javascript:
+  - https://unpkg.com/mermaid/dist/mermaid.min.js
 
 # ナビゲーションメニューの設定
 nav:
