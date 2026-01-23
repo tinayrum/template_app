@@ -1,0 +1,68 @@
+name: Auto Update Doc Status (PR Merge)
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  repository-projects: write
+
+jobs:
+  update-project-on-merge:
+    # PRが「マージ」されて閉じられた場合のみ実行 (キャンセル時は無視)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.ORG_ADMIN_TOKEN }} # Project操作権限のあるPAT
+      ORGANIZATION: "tinayrum"                 # 組織名/ユーザー名
+      PROJECT_NUMBER: 1                        # Project番号
+      TARGET_FIELD: "Doc Status"               # 更新対象のフィールド名
+      TARGET_OPTION: "Done"                    # 設定する値
+
+    steps:
+      - name: Check PR Checklist
+        id: check_pr_body
+        run: |
+          BODY="${{ github.event.pull_request.body }}"
+          
+          # テンプレートの表記に合わせて判定
+          # - [x] **Docs as Code:** ...
+          # - [x] **Preview:** ...
+          
+          # 改行や空白の揺らぎを吸収するため、文字列の一部で判定します
+          HAS_DOCS=$(echo "$BODY" | grep -F "- [x] **Docs as Code:**" || true)
+          HAS_PREVIEW=$(echo "$BODY" | grep -F "- [x] **Preview:**" || true)
+
+          if [ -n "$HAS_DOCS" ] && [ -n "$HAS_PREVIEW" ]; then
+            echo "✅ All Doc checks are passed."
+            echo "valid=true" >> $GITHUB_OUTPUT
+          else
+            echo "⏭ Doc checks are NOT completed. Skipping project update."
+            echo "valid=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update Project Item
+        if: steps.check_pr_body.outputs.valid == 'true'
+        run: |
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          echo "Finding project item for PR: $PR_URL"
+
+          # 1. Project Item IDを取得
+          # PRのURLを持つアイテムを探します
+          ITEM_ID=$(gh project item-list $PROJECT_NUMBER --owner $ORGANIZATION --format json --limit 100 | jq -r --arg url "$PR_URL" '.items[] | select(.content.url == $url) | .id')
+
+          if [ -z "$ITEM_ID" ]; then
+            echo "⚠️ This PR is not in Project #$PROJECT_NUMBER. Skipping."
+            exit 0
+          fi
+
+          echo "Found Item ID: $ITEM_ID"
+
+          # 2. ステータスを更新
+          # フィールドIDとオプションIDを動的に取得して更新
+          gh project item-edit --id "$ITEM_ID" \
+            --field-id "$(gh project field-list $PROJECT_NUMBER --owner $ORGANIZATION --format json | jq -r --arg name "$TARGET_FIELD" '.fields[] | select(.name == $name) | .id')" \
+            --project-id "$(gh project list --org $ORGANIZATION --format json | jq -r --arg num $PROJECT_NUMBER '.projects[] | select(.number == ($num|tonumber)) | .id')" \
+            --single-select-option-id "$(gh project field-list $PROJECT_NUMBER --owner $ORGANIZATION --format json | jq -r --arg name "$TARGET_FIELD" --arg opt "$TARGET_OPTION" '.fields[] | select(.name == $name) | .options[] | select(.name == $opt) | .id')"
+
+          echo "🎉 Project updated successfully!"
