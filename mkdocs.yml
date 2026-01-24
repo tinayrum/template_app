@@ -1,7 +1,7 @@
 site_name: <Application Name>
 site_description: <Application Description>
-repo_name: <Application Repository Name>
-repo_url: <Application Repository URL>
+# repo_name: <Application Repository Name>
+# repo_url: <Application Repository URL>
 
 # テーマ設定
 theme:
@@ -53,8 +53,8 @@ markdown_extensions:
 
 # 数式とMermaidのサポート
 extra_javascript:
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 # ナビゲーションメニューの設定
 nav:
   - Home: index.md
