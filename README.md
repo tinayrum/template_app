@@ -1,21 +1,32 @@
 # [App Name] Application Repository
 
-本リポジトリは、アプリケーションのソースコードおよび詳細仕様書を管理する子リポジトリです。
-親リポジトリ (Portal) と連携し、ドキュメントの更新は自動的にポータルサイトへ反映されます。
+App単体運用の場合は、.github/workflows/notify_portal.yml を削除してください。
 
 ## 🛠 開発ルール (Docs as Code)
 
-### 1. ブランチ命名規則 [cite: 511]
-| Prefix | 用途 | 例 |
-| :--- | :--- | :--- |
-| `feature/` | 新機能 (Minor Update) | `feature/login` |
-| `bugfix/` | バグ修正 (Patch Update) | `bugfix/header` |
-| `docs/` | ドキュメントのみ | `docs/manual` |
+### ブランチ命名規則
 
-### 2. 実装・PRルール
-* **ドキュメント同期:** コード修正時は、必ず同じPR内で `docs/` 配下も修正してください [cite: 526]。
-* **PR記述:** Description に必ず `Closes #Issue番号` を記述してください [cite: 532]。
-* **マージ:** **Squash and Merge** が必須です [cite: 543]。
+| Prefix | 用途 | SemVer影響 | 例 |
+| :--- | :--- | :--- | :--- |
+| `main` | メインブランチ | なし | `main` |
+| `develop` | ステージングブランチ | なし | `develop` |
+| `feature/` | 新機能追加 | Minor | `feature/add-login-function` |
+| `bugfix/` | バグ修正 | Patch | `bugfix/fix-crash-on-startup` |
+| `hotfix/` | 緊急修正 | Patch | `hotfix/fix-security-vulnerability` |
+| `release/` | リリース準備 | Patch/Minor | `release/v1.2.0-prep` |
+| `docs/` | ドキュメント更新のみ | Patch | `docs/update-api-docs` |
+| `chore/` | その他メンテナンス | Patch | `chore/update-dependencies` |
 
-## 📦 リリース
-PRが `main` にマージされると、**自動的にタグが付与され**、親リポジトリへ同期・デプロイされます。手動でのタグ作成は禁止です 。
+### コミットメッセージ規約
+
+- `type(scope): subject` 例: `feat(api): add login`
+- type例: feat, fix, docs, chore, refactor, test, ci
+- scopeは任意、subjectは簡潔に
+
+### 運用のポイント
+
+- **Docs as Code**: コード修正時はdocs/も必ず更新
+- **main直Push禁止**: PR経由でマージ
+- **CI/CD必須**: GitHub Actions等で自動テスト・デプロイ
+- **README.md整備**: QuickStart・開発手順・依存関係を明記
+- **テンプレート活用**: PRテンプレート・Issueテンプレートを用意
